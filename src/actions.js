@@ -114,7 +114,7 @@ const formatPayrollGQL = (payroll) => `
   ${payroll?.paymentPlan ? `paymentPlanId: "${decodeId(payroll.paymentPlan.id)}"` : ''}
   ${payroll?.paymentCycle ? `paymentCycleId: "${decodeId(payroll.paymentCycle.id)}"` : ''}
   ${payroll?.paymentMethod ? `paymentMethod: "${payroll.paymentMethod}"` : ''}
-  ${`status: ${PAYROLL_STATUS.PENDING_APPROVAL}`}
+  ${`status: ${PAYROLL_STATUS.PENDING_VERIFICATION}`}
   ${
   payroll?.jsonExt
     ? `jsonExt: ${JSON.stringify(payroll.jsonExt)}`

@@ -119,6 +119,12 @@ const DEFAULT_CONFIG = {
     taskSource: ['payroll'],
   },
   {
+    text: <FormattedMessage module="payroll" id="payroll.tasks.verify.title" />,
+    tableHeaders: PayrollTaskTableHeaders,
+    itemFormatters: PayrollTaskItemFormatters,
+    taskSource: ['payroll_verification'],
+  },
+  {
     text: <FormattedMessage module="payroll" id="payroll.tasks.reconciliation.title" />,
     tableHeaders: PayrollReconciliationTaskTableHeaders,
     itemFormatters: PayrollReconciliationTaskItemFormatters,

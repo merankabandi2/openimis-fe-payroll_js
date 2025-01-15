@@ -84,6 +84,7 @@ function PaymentPointSearcher({
     'paymentPoint.ppm',
     'paymentPoint.location',
     'emptyLabel',
+    'emptyLabel',
   ];
 
   const sorts = () => [

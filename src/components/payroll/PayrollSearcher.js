@@ -87,6 +87,7 @@ function PayrollSearcher({
     'payroll.status',
     'payroll.paymentMethod',
     'emptyLabel',
+    'emptyLabel',
   ];
 
   const sorts = () => [

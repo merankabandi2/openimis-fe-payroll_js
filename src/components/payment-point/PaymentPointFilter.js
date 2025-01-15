@@ -70,7 +70,7 @@ function PaymentPointFilter({
         field={(
           <Grid xs={12}>
             <PublishedComponent
-              pubRef="location.DetailedLocationFilter"
+              pubRef="location.LocationFilter"
               withNull
               filters={filters}
               onChangeFilters={onChangeFilters}
