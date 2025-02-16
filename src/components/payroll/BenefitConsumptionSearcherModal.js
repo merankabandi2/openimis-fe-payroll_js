@@ -174,7 +174,11 @@ function BenefitConsumptionSearcherModal({
       )
     ),
     (benefitAttachment) => (
-      payrollDetail.status === PAYROLL_STATUS.PENDING_APPROVAL
+      (
+        payrollDetail.status === PAYROLL_STATUS.PENDING_APPROVAL
+        || payrollDetail.status === PAYROLL_STATUS.PENDING_VERIFICATION
+      )
+
       && benefitAttachment.benefit.status !== 'PENDING_DELETION' && (
         <Button
           onClick={() => confirmDeleteBenefitConsumption(benefitAttachment)}

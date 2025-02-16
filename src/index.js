@@ -9,10 +9,12 @@ import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import { FormattedMessage } from '@openimis/fe-core';
 import { RIGHT_PAYMENT_POINT_SEARCH, RIGHT_PAYROLL_CREATE, RIGHT_PAYROLL_SEARCH } from './constants';
 import reducer from './reducer';
+import PaymentMainMenu from './menu/PaymentMainMenu';
 import messages_en from './translations/en.json';
 import PaymentPointPage from './pages/payment-point/PaymentPointPage';
 import PaymentPointsPage from './pages/payment-point/PaymentPointsPage';
 import PayrollPage from './pages/payroll/PayrollPage';
+import PaymentRequestPage from './pages/payroll/PaymentRequestPage';
 import PayrollsPage from './pages/payroll/PayrollsPage';
 import ApprovedPayrollsPage from './pages/payroll/ApprovedPayrollsPage';
 import ReconciledPayrollsPage from './pages/payroll/ReconciledPayrollsPage';
@@ -30,6 +32,26 @@ import {
   BenefitConsumptionsTabLabel,
   BenefitConsumptionsTabPanel,
 } from './components/payroll/BenefitConsumptionTabPanel';
+import {
+  PaymentRequestAllTabLabel,
+  PaymentRequestAllTabPanel,
+} from './components/payroll/PaymentRequestAllTabPanel';
+import {
+  PaymentRequestToValidateTabLabel,
+  PaymentRequestToValidateTabPanel,
+} from './components/payroll/PaymentRequestToValidateTabPanel';
+import {
+  PaymentRequestToVerifyTabLabel,
+  PaymentRequestToVerifyTabPanel,
+} from './components/payroll/PaymentRequestToVerifyTabPanel';
+import {
+  PaymentRequestReconciliatedTabLabel,
+  PaymentRequestReconciliatedTabPanel,
+} from './components/payroll/PaymentRequestReconciliatedTabPanel';
+import {
+  PaymentRequestRejectedTabLabel,
+  PaymentRequestRejectedTabPanel,
+} from './components/payroll/PaymentRequestRejectedTabPanel';
 import {
   PayrollRejectedTaskItemFormatters,
   PayrollRejectedTaskTableHeaders,
@@ -49,6 +71,7 @@ const ROUTE_PAYROLLS_APPROVED = 'payrollsApproved';
 const ROUTE_PAYROLLS_PENDING = 'payrollsPending';
 const ROUTE_PAYROLLS_RECONCILED = 'payrollsReconciled';
 const ROUTE_PAYROLL = 'payrolls/payroll';
+const ROUTE_PAYMENTREQUEST = 'paymentrequest';
 
 const DEFAULT_CONFIG = {
   translations: [{ key: 'en', messages: messages_en }],
@@ -77,6 +100,7 @@ const DEFAULT_CONFIG = {
       path: `${ROUTE_PAYROLL}/:payroll_uuid?/:createPayrollFromFailedInvoices?/:benefitPlanId?`,
       component: PayrollPage,
     },
+    { path: ROUTE_PAYMENTREQUEST, component: PaymentRequestPage },
   ],
   'invoice.MainMenu': [
     {
@@ -110,8 +134,27 @@ const DEFAULT_CONFIG = {
       filter: (rights) => rights.includes(RIGHT_PAYROLL_SEARCH),
     },
   ],
+  'core.MainMenu': [PaymentMainMenu],
   'payroll.TabPanel.label': [BenefitConsumptionsTabLabel, PayrollTaskTabLabel, PayrollPaymentFilesTabLabel],
-  'payroll.TabPanel.panel': [BenefitConsumptionsTabPanel, PayrollTaskTabPanel, PayrollPaymentFilesTabPanel],
+  'payroll.TabPanel.panel': [
+    BenefitConsumptionsTabPanel,
+    PayrollTaskTabPanel,
+    PayrollPaymentFilesTabPanel,
+  ],
+  'paymentRequest.TabPanel.label': [
+    PaymentRequestAllTabLabel,
+    PaymentRequestToVerifyTabLabel,
+    PaymentRequestToValidateTabLabel,
+    PaymentRequestReconciliatedTabLabel,
+    PaymentRequestRejectedTabLabel,
+  ],
+  'paymentRequest.TabPanel.panel': [
+    PaymentRequestAllTabPanel,
+    PaymentRequestToVerifyTabPanel,
+    PaymentRequestToValidateTabPanel,
+    PaymentRequestReconciliatedTabPanel,
+    PaymentRequestRejectedTabPanel,
+  ],
   'tasksManagement.tasks': [{
     text: <FormattedMessage module="payroll" id="payroll.tasks.update.title" />,
     tableHeaders: PayrollTaskTableHeaders,

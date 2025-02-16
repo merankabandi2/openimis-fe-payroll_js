@@ -35,6 +35,9 @@ export const ACTION_TYPE = {
   GET_PAYROLL_PAYMENT_FILES: 'GET_PAYROLL_PAYMENT_FILES',
   BENEFITS_SUMMARY: 'PAYROLL_BENEFITS_SUMMARY',
   DELETE_BENEFIT_CONSUMPTION: 'BENEFIT_CONSUMPTION_MUTATION_DELETE_BENEFIT_CONSUMPTION',
+  REJECT_BENEFIT_CONSUMPTION: 'BENEFIT_CONSUMPTION_MUTATION_REJECT_BENEFIT_CONSUMPTION',
+  GET_TASK: 'PAYROLL_TASK_MANAGEMENT_TASK',
+  RESOLVE_TASK: 'PAYROLL_TASK_MANAGEMENT_RESOLVE_TASK',
 };
 
 export const MUTATION_SERVICE = {
@@ -52,6 +55,10 @@ export const MUTATION_SERVICE = {
   },
   BENEFIT_CONSUMPTION: {
     DELETE: 'deleteBenefitConsumption',
+    REJECT: 'rejectBenefitConsumption',
+  },
+  TASK: {
+    RESOLVE: 'resolveTask',
   },
 };
 
@@ -80,6 +87,11 @@ const STORE_STATE = {
   fetchedPayroll: false,
   payroll: {},
   errorPayroll: null,
+
+  fetchingTask: false,
+  fetchedTask: false,
+  task: {},
+  errorTask: null,
 
   fetchingBenefitConsumptions: true,
   benefitConsumption: [],
@@ -251,6 +263,39 @@ function reducer(
         payroll: null,
         errorPayroll: null,
         payrollBills: [],
+      };
+    case REQUEST(ACTION_TYPE.GET_TASK):
+      return {
+        ...state,
+        fetchingTask: true,
+        fetchedTask: false,
+        task: {},
+        errorTask: null,
+      };
+    case SUCCESS(ACTION_TYPE.GET_TASK):
+      return {
+        ...state,
+        fetchingTask: false,
+        fetchedTask: true,
+        task: parseData(action.payload.data.task)?.map((task) => ({
+          ...task,
+          id: decodeId(task.id),
+        }))?.[0],
+        errorTask: formatGraphQLError(action.payload),
+      };
+    case ERROR(ACTION_TYPE.GET_TASK):
+      return {
+        ...state,
+        fetchingTask: false,
+        errorTask: formatServerError(action.payload),
+      };
+    case CLEAR(ACTION_TYPE.GET_TASK):
+      return {
+        ...state,
+        fetchingTask: true,
+        fetchedTask: false,
+        task: null,
+        errorTask: null,
       };
     case REQUEST(ACTION_TYPE.GET_BENEFIT_CONSUMPTION):
       return {
@@ -454,6 +499,8 @@ function reducer(
       return dispatchMutationResp(state, MUTATION_SERVICE.PAYROLL.DELETE, action);
     case SUCCESS(ACTION_TYPE.DELETE_BENEFIT_CONSUMPTION):
       return dispatchMutationResp(state, MUTATION_SERVICE.BENEFIT_CONSUMPTION.DELETE, action);
+    case SUCCESS(ACTION_TYPE.REJECT_BENEFIT_CONSUMPTION):
+      return dispatchMutationResp(state, MUTATION_SERVICE.BENEFIT_CONSUMPTION.REJECT, action);
     default:
       return state;
   }

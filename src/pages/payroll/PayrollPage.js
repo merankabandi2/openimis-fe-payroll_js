@@ -17,10 +17,12 @@ import {
   fetchPayroll,
   clearPayroll,
   createPayroll,
+  fetchTask,
 } from '../../actions';
 import {
   MODULE_NAME, PAYROLL_FROM_FAILED_INVOICES_URL_PARAM,
   RIGHT_PAYROLL_CREATE,
+  PAYROLL_STATUS,
 } from '../../constants';
 import { ACTION_TYPE } from '../../reducer';
 import { mutationLabel, pageTitle } from '../../utils/string-utils';
@@ -35,11 +37,14 @@ function PayrollPage({
   statePayrollUuid,
   taskPayrollUuid,
   rights,
+  user,
   confirmed,
   submittingMutation,
   mutation,
   payroll,
   fetchPayroll,
+  task,
+  fetchTask,
   createPayroll,
   clearPayroll,
   clearConfirm,
@@ -78,6 +83,17 @@ function PayrollPage({
       fetchPayroll(modulesManager, [`id: "${payrollUuid}"`]);
     }
   }, [payrollUuid]);
+
+  useEffect(() => {
+    if (
+      payroll
+      && payrollUuid
+      && [PAYROLL_STATUS.PENDING_VERIFICATION, PAYROLL_STATUS.PENDING_APPROVAL].includes(payroll.status)
+    ) {
+      const source = (payroll.status === PAYROLL_STATUS.PENDING_VERIFICATION) ? 'payroll_verification' : 'payroll';
+      fetchTask(modulesManager, [`entityId: "${payrollUuid}", source: "${source}"`]);
+    }
+  }, [payroll]);
 
   useEffect(() => {
     if (confirmed && typeof confirmed === 'function') confirmedAction();
@@ -122,12 +138,11 @@ function PayrollPage({
 
   const mandatoryFieldsEmpty = () => {
     if (
-      editedPayroll?.name
-      && editedPayroll?.paymentPlan
+      editedPayroll?.paymentPlan
       && editedPayroll?.paymentCycle
       && editedPayroll?.dateValidFrom
-      && editedPayroll?.dateValidTo
-      && editedPayroll?.paymentMethod
+      && editedPayroll?.paymentPoint
+      && editedPayroll?.location
       && !editedPayroll?.isDeleted) return false;
     return true;
   };
@@ -135,6 +150,16 @@ function PayrollPage({
   const canSave = () => !mandatoryFieldsEmpty() && (!readOnly || isPayrollFromFailedInvoices);
 
   const handleSave = () => {
+    if (!payrollUuid) {
+      const dateValidFrom = new Date(editedPayroll.dateValidFrom);
+      const dateValidTo = new Date(dateValidFrom.getTime());
+      dateValidTo.setMonth(dateValidTo.getMonth() + 1);
+
+      const datepaiement = dateValidFrom.toLocaleDateString();
+      const localite = editedPayroll.location.name;
+      editedPayroll.name = `Demande de paiement du ${datepaiement} pour la commune de ${localite}`;
+      editedPayroll.dateValideTo = dateValidTo.toISOString();
+    }
     createPayroll(
       editedPayroll,
       formatMessageWithValues('payroll.mutation.create', mutationLabel(payroll)),
@@ -165,12 +190,14 @@ function PayrollPage({
         HeadPanel={PayrollHeadPanel}
         Panels={[PayrollTab]}
         rights={rights}
+        user={user}
         actions={actions}
         setConfirmedAction={setConfirmedAction}
         payrollUuid={payrollUuid}
         saveTooltip={formatMessage('tooltip.save')}
         isInTask={!!taskPayrollUuid}
         payroll={payroll}
+        task={task}
         readOnly={readOnly}
         isPayrollFromFailedInvoices={isPayrollFromFailedInvoices}
         benefitPlanId={benefitPlanId}
@@ -184,6 +211,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   fetchPayroll,
   createPayroll,
   clearPayroll,
+  fetchTask,
   coreConfirm,
   clearConfirm,
   journalize,
@@ -194,10 +222,12 @@ const mapStateToProps = (state, props) => ({
   createPayrollFromFailedInvoices: props?.match?.params?.createPayrollFromFailedInvoices,
   benefitPlanId: props?.match?.params?.benefitPlanId,
   rights: state.core?.user?.i_user?.rights ?? [],
+  user: state.core?.user ?? [],
   confirmed: state.core.confirmed,
   submittingMutation: state.payroll.submittingMutation,
   mutation: state.payroll.mutation,
   payroll: state.payroll.payroll,
+  task: state.payroll.task,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PayrollPage);

@@ -10,7 +10,6 @@ import {
   useModulesManager,
   useTranslations,
   PublishedComponent,
-  decodeId,
 } from '@openimis/fe-core';
 import {
   CONTAINS_LOOKUP,
@@ -18,6 +17,7 @@ import {
   EMPTY_STRING,
   MODULE_NAME,
 } from '../../constants';
+import PaymentMethodPicker from '../../pickers/PaymentMethodPicker';
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -79,27 +79,21 @@ function PaymentPointFilter({
           </Grid>
           )}
       />
-      <ControlledField
-        module="payroll"
-        id="admin.PaymentPointManagerPicker"
-        field={(
-          <Grid className={classes.item} xs={3}>
-            <PublishedComponent
-              pubRef="admin.PaymentPointManagerPicker"
-              value={filterValue('ppm_Id')}
-              withPlaceholder
-              withLabel
-              onChange={(ppm) => onChangeFilters([
-                {
-                  id: 'ppm_Id',
-                  value: ppm,
-                  filter: `ppm_Id: "${ppm?.id && decodeId(ppm?.id)}"`,
-                },
-              ])}
-            />
-          </Grid>
-          )}
-      />
+      <Grid item xs={3} className={classes.item}>
+        <PaymentMethodPicker
+          withNull
+          nullLabel={formatMessage('any')}
+          label={formatMessage('PaymentPointFilter.paymentMethod')}
+          value={filterValue('paymentMethod')}
+          onChange={(value) => onChangeFilters([
+            {
+              id: 'paymentMethod',
+              value,
+              filter: `paymentMethod: "${value}"`,
+            },
+          ])}
+        />
+      </Grid>
       <Grid xs={3} className={classes.item}>
         <TextInput
           module="payroll"

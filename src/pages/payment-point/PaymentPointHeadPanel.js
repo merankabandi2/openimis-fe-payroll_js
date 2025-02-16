@@ -9,8 +9,10 @@ import {
   FormPanel,
   withModulesManager,
   PublishedComponent,
+  formatMessage,
 } from '@openimis/fe-core';
 import { MAX_LENGTH } from '../../constants';
+import PaymentMethodPicker from '../../pickers/PaymentMethodPicker';
 
 const styles = (theme) => ({
   tableTitle: theme.table.title,
@@ -22,7 +24,12 @@ const styles = (theme) => ({
 
 class PaymentPointHeadPanel extends FormPanel {
   render() {
-    const { edited, classes, readOnly } = this.props;
+    const {
+      edited,
+      classes,
+      readOnly,
+      intl,
+    } = this.props;
     const paymentPoint = { ...edited };
     return (
       <Grid container className={classes.item}>
@@ -37,15 +44,14 @@ class PaymentPointHeadPanel extends FormPanel {
             onChange={(locations) => this.updateAttribute('location', locations)}
           />
         </Grid>
-        <Grid xs={3} className={classes.item}>
-          <PublishedComponent
-            pubRef="admin.PaymentPointManagerPicker"
+        <Grid item xs={3} className={classes.item}>
+          <PaymentMethodPicker
             required
-            withPlaceholder
-            withLabel
+            withNull={false}
             readOnly={readOnly}
-            value={paymentPoint?.ppm}
-            onChange={(ppm) => this.updateAttribute('ppm', ppm)}
+            value={!!paymentPoint?.paymentMethod && paymentPoint.paymentMethod}
+            onChange={(paymentMethod) => this.updateAttribute('paymentMethod', paymentMethod)}
+            label={formatMessage(intl, 'payroll', 'paymentMethod')}
           />
         </Grid>
         <Grid xs={3} className={classes.item}>

@@ -21,6 +21,8 @@ export const PAYMENT_POINT_PROJECTION = (modulesManager) => [
   'isDeleted',
   `location ${modulesManager.getProjection('location.Location.FlatProjection')}`,
   `ppm ${modulesManager.getProjection('admin.UserPicker.projection')}`,
+  'paymentMethod',
+  'jsonExt',
 ];
 
 const BENEFIT_CONSUMPTION_PROJECTION = () => [
@@ -73,6 +75,7 @@ const PAYROLL_PROJECTION = (modulesManager) => [
   'dateValidFrom',
   'dateValidTo',
   'isDeleted',
+  `location ${modulesManager.getProjection('location.Location.FlatProjection')}`,
 ];
 
 const PAYROLL_SEARCHER_PROJECTION = (modulesManager) => [
@@ -87,6 +90,7 @@ const PAYROLL_SEARCHER_PROJECTION = (modulesManager) => [
   'dateValidFrom',
   'dateValidTo',
   'isDeleted',
+  `location ${modulesManager.getProjection('location.Location.FlatProjection')}`,
 ];
 
 const CSV_RECONCILIATION_PROJECTION = () => [
@@ -100,11 +104,16 @@ const PAYMENT_METHOD_PROJECTION = () => [
   'paymentMethods {name}',
 ];
 
+const TASK_PROJECTION = () => [
+  'id',
+  'businessStatus',
+];
+
 const formatPaymentPointGQL = (paymentPoint) => `
   ${paymentPoint?.id ? `id: "${paymentPoint.id}"` : ''}
   ${paymentPoint?.name ? `name: "${formatGQLString(paymentPoint.name)}"` : ''}
   ${paymentPoint?.location ? `locationId: ${decodeId(paymentPoint.location.id)}` : ''}
-  ${paymentPoint?.ppm ? `ppmId: "${decodeId(paymentPoint.ppm.id)}"` : ''}
+  ${paymentPoint?.paymentMethod ? `paymentMethod: "${paymentPoint.paymentMethod}"` : ''}
   `;
 
 const formatPayrollGQL = (payroll) => `
@@ -115,6 +124,7 @@ const formatPayrollGQL = (payroll) => `
   ${payroll?.paymentCycle ? `paymentCycleId: "${decodeId(payroll.paymentCycle.id)}"` : ''}
   ${payroll?.paymentMethod ? `paymentMethod: "${payroll.paymentMethod}"` : ''}
   ${`status: ${PAYROLL_STATUS.PENDING_VERIFICATION}`}
+  ${payroll?.location ? `locationId: ${decodeId(payroll.location.id)}` : ''}
   ${
   payroll?.jsonExt
     ? `jsonExt: ${JSON.stringify(payroll.jsonExt)}`
@@ -165,6 +175,11 @@ export function fetchPaymentPoint(modulesManager, params) {
 export function fetchPayrollPaymentFiles(modulesManager, params) {
   const payload = formatPageQueryWithCount('csvReconciliationUpload', params, CSV_RECONCILIATION_PROJECTION());
   return graphql(payload, ACTION_TYPE.GET_PAYROLL_PAYMENT_FILES);
+}
+
+export function fetchTask(modulesManager, params) {
+  const payload = formatPageQueryWithCount('task', params, TASK_PROJECTION());
+  return graphql(payload, ACTION_TYPE.GET_TASK);
 }
 
 export const clearPaymentPoint = () => (dispatch) => {
@@ -229,6 +244,17 @@ export function deleteBenefitConsumption(benefit, clientMutationLabel) {
     MUTATION_SERVICE.BENEFIT_CONSUMPTION.DELETE,
     benefitUuids,
     ACTION_TYPE.DELETE_BENEFIT_CONSUMPTION,
+    clientMutationLabel,
+  );
+}
+
+export function rejectBenefitConsumption(benefit, clientMutationLabel) {
+  const uuid = isBase64Encoded(benefit.id) ? decodeId(benefit?.id) : benefit?.id;
+  const benefitUuids = `ids: ["${uuid}"]`;
+  return PERFORM_MUTATION(
+    MUTATION_SERVICE.BENEFIT_CONSUMPTION.REJECT,
+    benefitUuids,
+    ACTION_TYPE.REJECT_BENEFIT_CONSUMPTION,
     clientMutationLabel,
   );
 }
@@ -310,6 +336,21 @@ export function makePaymentForPayroll(payroll, clientMutationLabel) {
     MUTATION_SERVICE.PAYROLL.MAKE_PAYMENT,
     payrollUuids,
     ACTION_TYPE.MAKE_PAYMENT_PAYROLL,
+    clientMutationLabel,
+  );
+}
+
+export const formatTaskResolveGQL = (task, user, approveOrFail, additionalData) => `
+  ${task?.id ? `id: "${task.id}"` : ''}
+  ${user && approveOrFail ? `businessStatus: "{\\"${user.id}\\": \\"${approveOrFail}\\"}"` : ''}
+  ${additionalData ? `additionalData: "${additionalData}"` : ''}
+  `;
+
+export function resolveTask(task, clientMutationLabel, user, approveOrFail, additionalData = null) {
+  return PERFORM_MUTATION(
+    MUTATION_SERVICE.TASK.RESOLVE,
+    formatTaskResolveGQL(task, user, approveOrFail, additionalData),
+    ACTION_TYPE.RESOLVE_TASK,
     clientMutationLabel,
   );
 }

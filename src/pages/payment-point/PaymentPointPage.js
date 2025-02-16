@@ -93,7 +93,7 @@ function PaymentPointPage({
     if (
       editedPaymentPoint?.name
       && editedPaymentPoint?.location
-      && editedPaymentPoint?.ppm
+      && editedPaymentPoint?.paymentMethod
       && !editedPaymentPoint?.isDeleted) return false;
     return true;
   };

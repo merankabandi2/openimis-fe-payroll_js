@@ -16,6 +16,9 @@ export const CONTAINS_LOOKUP = 'Icontains';
 export const ROWS_PER_PAGE_OPTIONS = [10, 20, 50, 100];
 export const EMPTY_STRING = '';
 
+export const APPROVED = 'APPROVED';
+export const FAILED = 'FAILED';
+
 export const MAX_LENGTH = {
   NAME: 50,
 };
@@ -23,10 +26,13 @@ export const MAX_LENGTH = {
 export const MODULE_NAME = 'payroll';
 
 export const BENEFIT_CONSUMPTION_LIST_TAB_VALUE = 'benefitConsumptionsTab';
+export const ALL_PAYMENT_REQUEST_LIST_TAB_VALUE = 'paymentRequestTab-ALL';
 export const PAYROLL_TASK_TAB_VALUE = 'payrollTaskTab';
 export const PAYROLL_PAYMENT_FILES_TAB_VALUE = 'payrollPaymentFilesTab';
 export const PAYROLL_TABS_LABEL_CONTRIBUTION_KEY = 'payroll.TabPanel.label';
 export const PAYROLL_TABS_PANEL_CONTRIBUTION_KEY = 'payroll.TabPanel.panel';
+export const PAYMENTREQUEST_TABS_LABEL_CONTRIBUTION_KEY = 'paymentRequest.TabPanel.label';
+export const PAYMENTREQUEST_TABS_PANEL_CONTRIBUTION_KEY = 'paymentRequest.TabPanel.panel';
 
 export const RIGHT_BILL_SEARCH = 156101;
 export const RIGHT_BILL_CREATE = 156102;
@@ -109,3 +115,5 @@ export const PAYROLL_PAYMENT_FILE_STATUS_LIST = [
 export const BENEFIT_PLAN_CONTENT_TYPE_ID = 175;
 
 export const PAYROLL_FROM_FAILED_INVOICES_URL_PARAM = 'createPayrollFromFailedInvoices=true';
+
+export const PAYMENT_MAIN_MENU_CONTRIBUTION_KEY = 'payment.MainMenu';

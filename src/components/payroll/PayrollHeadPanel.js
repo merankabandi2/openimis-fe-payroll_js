@@ -2,21 +2,17 @@
 import React from 'react';
 import { injectIntl } from 'react-intl';
 
-import { Grid, Divider, Typography } from '@material-ui/core';
+import { Grid, Divider } from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/core/styles';
 
 import {
-  formatMessage,
   FormPanel,
   PublishedComponent,
-  TextInput,
   withModulesManager,
-  FormattedMessage,
 } from '@openimis/fe-core';
-import AdvancedFiltersDialog from './AdvancedFiltersDialog';
+import PaymentVerifyApproveForPayment from './dialogs/PaymentVerifyApproveForPayment';
 import { CLEARED_STATE_FILTER } from '../../constants';
 import PayrollStatusPicker from './PayrollStatusPicker';
-import PaymentMethodPicker from '../../pickers/PaymentMethodPicker';
 
 const styles = (theme) => ({
   tableTitle: theme.table.title,
@@ -85,21 +81,22 @@ class PayrollHeadPanel extends FormPanel {
 
   render() {
     const {
-      edited, classes, intl, readOnly, isPayrollFromFailedInvoices, benefitPlanId,
+      edited, classes, readOnly, isPayrollFromFailedInvoices, benefitPlanId, user, task,
     } = this.props;
     const payroll = { ...edited };
-    const { appliedCustomFilters, appliedFiltersRowStructure } = this.state;
+
     return (
       <>
         <Grid container className={classes.item}>
-          <Grid item xs={3} className={classes.item}>
-            <TextInput
-              module="payroll"
-              label={formatMessage(intl, 'payroll', 'paymentPoint.name')}
-              value={payroll?.name}
+          <Grid xs={12}>
+            <PublishedComponent
+              pubRef="location.DetailedLocation"
+              withNull
               required
-              onChange={(name) => this.updateAttribute('name', name)}
-              readOnly={isPayrollFromFailedInvoices ? !isPayrollFromFailedInvoices : readOnly}
+              readOnly={readOnly}
+              filterLabels={false}
+              value={payroll?.location}
+              onChange={(locations) => this.updateAttribute('location', locations)}
             />
           </Grid>
           <Grid item xs={3} className={classes.item}>
@@ -147,16 +144,6 @@ class PayrollHeadPanel extends FormPanel {
           </Grid>
           )}
           <Grid item xs={3} className={classes.item}>
-            <PaymentMethodPicker
-              required
-              withNull={false}
-              readOnly={readOnly}
-              value={!!payroll?.paymentMethod && payroll.paymentMethod}
-              onChange={(paymentMethod) => this.updateAttribute('paymentMethod', paymentMethod)}
-              label={formatMessage(intl, 'payroll', 'paymentMethod')}
-            />
-          </Grid>
-          <Grid item xs={3} className={classes.item}>
             <PublishedComponent
               pubRef="core.DatePicker"
               module="payroll"
@@ -167,58 +154,22 @@ class PayrollHeadPanel extends FormPanel {
               readOnly={readOnly}
             />
           </Grid>
-          <Grid item xs={3} className={classes.item}>
-            <PublishedComponent
-              pubRef="core.DatePicker"
-              module="payroll"
-              label="dateValidTo"
-              required
-              value={payroll.dateValidTo ? payroll.dateValidTo : null}
-              onChange={(v) => this.updateAttribute('dateValidTo', v)}
-              readOnly={readOnly}
-            />
+          <Grid item xs={12} className={classes.item}>
+            <div style={{
+              float: 'right',
+              paddingRight: '16px',
+            }}
+            >
+              <PaymentVerifyApproveForPayment
+                classes={classes}
+                payrollDetail={payroll}
+                task={task}
+                user={user}
+              />
+            </div>
           </Grid>
         </Grid>
         <Divider />
-        {!isPayrollFromFailedInvoices
-            && (
-            <>
-              <>
-                <Typography>
-                  <div className={classes.item}>
-                    <FormattedMessage module="contributionPlan" id="paymentPlan.advancedCriteria" />
-                  </div>
-                </Typography>
-                {!readOnly && (
-                  <div className={classes.item}>
-                    <FormattedMessage module="contributionPlan" id="paymentPlan.advancedCriteria.tip" />
-                  </div>
-                )}
-                <Divider />
-                <Grid container className={classes.item}>
-
-                  <AdvancedFiltersDialog
-                    object={payroll?.paymentPlan?.benefitPlan
-                      ? JSON.parse(JSON.parse(payroll.paymentPlan.benefitPlan))
-                      : null}
-                    objectToSave={payroll}
-                    moduleName="social_protection"
-                    objectType="BenefitPlan"
-                    setAppliedCustomFilters={this.setAppliedCustomFilters}
-                    appliedCustomFilters={appliedCustomFilters}
-                    appliedFiltersRowStructure={appliedFiltersRowStructure}
-                    setAppliedFiltersRowStructure={this.setAppliedFiltersRowStructure}
-                    updateAttributes={this.updateJsonExt}
-                    getDefaultAppliedCustomFilters={() => this.getDefaultAppliedCustomFilters(payroll.jsonExt)}
-                    readOnly={readOnly}
-                    edited={this.props.edited}
-                  />
-
-                </Grid>
-              </>
-              <Divider />
-            </>
-            )}
       </>
     );
   }

@@ -105,19 +105,20 @@ function PayrollFilter({
         />
       </Grid>
       <Grid item xs={3} className={classes.item}>
-        <PublishedComponent
-          pubRef="paymentCycle.PaymentCyclePicker"
-          withLabel
-          withPlaceholder
-          filters={filters}
-          value={filterValue('paymentCycle_Id')}
-          onChange={(paymentCycle) => onChangeFilters([
-            {
-              id: 'paymentCycle_Id',
-              value: paymentCycle,
-              filter: `paymentCycle_Id: "${paymentCycle?.id && decodeId(paymentCycle.id)}"`,
-            },
-          ])}
+        <ControlledField
+          module="payroll"
+          id="payroll.location"
+          field={(
+            <Grid xs={12}>
+              <PublishedComponent
+                pubRef="location.LocationFilter"
+                withNull
+                filters={filters}
+                onChangeFilters={onChangeFilters}
+                anchor="parentLocation"
+              />
+            </Grid>
+            )}
         />
       </Grid>
       <Grid item xs={2} className={classes.item}>

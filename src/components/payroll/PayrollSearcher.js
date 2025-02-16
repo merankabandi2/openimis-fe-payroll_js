@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { IconButton, Tooltip } from '@material-ui/core';
@@ -21,7 +21,7 @@ import {
   RIGHT_PAYROLL_SEARCH, ROWS_PER_PAGE_OPTIONS, PAYROLL_STATUS,
 } from '../../constants';
 import { mutationLabel, pageTitle } from '../../utils/string-utils';
-import { fetchPayrolls, deletePayrolls } from '../../actions';
+import { fetchPayrolls, deletePayrolls, fetchTask } from '../../actions';
 
 function PayrollSearcher({
   deletePayrolls,
@@ -37,6 +37,7 @@ function PayrollSearcher({
   confirmed,
   submittingMutation,
   mutation,
+  paymentRequestStatus,
 }) {
   const history = useHistory();
   const modulesManager = useModulesManager();
@@ -98,12 +99,23 @@ function PayrollSearcher({
     ['paymentMethod', true],
   ];
 
-  const defaultFilters = () => ({
-    isDeleted: {
-      value: false,
-      filter: 'isDeleted: false',
-    },
-  });
+  const defaultFilters = () => {
+    const filters = {
+      isDeleted: {
+        value: false,
+        filter:
+        'isDeleted: false',
+      },
+    };
+    if (paymentRequestStatus) {
+      filters.status = {
+        value: true,
+        filter:
+        `status: ${paymentRequestStatus}`,
+      };
+    }
+    return filters;
+  };
 
   const fetch = (params) => fetchPayrolls(modulesManager, params);
 
@@ -114,6 +126,18 @@ function PayrollSearcher({
   );
 
   const onDelete = (payroll) => setPayrollToDelete(payroll);
+
+  const onValidate = (payroll) => {
+    const dispatch = useDispatch();
+    const taskParams = {
+      isDeleted: false,
+      source: 'payroll',
+      entity_id: payroll?.id,
+      first: 1,
+      orderBy: ['-dateCreated'],
+    };
+    dispatch(fetchTask(modulesManager, taskParams));
+  };
 
   const itemFormatters = () => [
     (payroll) => payroll.name,
@@ -139,6 +163,15 @@ function PayrollSearcher({
         <IconButton
           onClick={() => onDelete(payroll)}
           disabled={deletedPayrollUuids.includes(payroll.id) || payroll.status !== PAYROLL_STATUS.PENDING_APPROVAL}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
+    ),
+    (payroll) => (
+      <Tooltip title={formatMessage('tooltip.validate')}>
+        <IconButton
+          onClick={() => onValidate(payroll)}
         >
           <DeleteIcon />
         </IconButton>
