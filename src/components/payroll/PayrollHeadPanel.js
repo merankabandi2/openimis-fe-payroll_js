@@ -90,7 +90,7 @@ class PayrollHeadPanel extends FormPanel {
         <Grid container className={classes.item}>
           <Grid xs={12}>
             <PublishedComponent
-              pubRef="location.DetailedLocation"
+              pubRef="location.CommuneLocation"
               withNull
               required
               readOnly={readOnly}

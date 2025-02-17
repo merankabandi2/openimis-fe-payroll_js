@@ -146,9 +146,9 @@ function PayrollSearcher({
     (payroll) => (payroll.paymentPoint
       ? `${payroll.paymentPoint.name}` : ''),
     (payroll) => (payroll.status
-      ? `${payroll.status}` : ''),
+      ? formatMessage(`payroll.payroll.payrollStatusPicker.${payroll.status}`) : ''),
     (payroll) => (payroll.paymentMethod
-      ? `${payroll.paymentMethod}` : ''),
+      ? `${payroll.paymentMethod}` : `${payroll.paymentPoint.paymentMethod}`),
     (payroll) => (
       <Tooltip title={formatMessage('tooltip.viewDetails')}>
         <IconButton
@@ -163,15 +163,6 @@ function PayrollSearcher({
         <IconButton
           onClick={() => onDelete(payroll)}
           disabled={deletedPayrollUuids.includes(payroll.id) || payroll.status !== PAYROLL_STATUS.PENDING_APPROVAL}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </Tooltip>
-    ),
-    (payroll) => (
-      <Tooltip title={formatMessage('tooltip.validate')}>
-        <IconButton
-          onClick={() => onValidate(payroll)}
         >
           <DeleteIcon />
         </IconButton>

@@ -189,22 +189,6 @@ function PaymentVerifyApproveForPaymentDialog({
           <div style={{ maxWidth: '3000px' }}>
             <div style={{ float: 'left' }}>
               <Button
-                onClick={() => closePayrollCallback(payrollDetail)}
-                variant="contained"
-                color="primary"
-                disabled={
-                  payrollDetail.paymentMethod === 'StrategyOnlinePayment'
-                    ? approvedBeneficiaries === 0
-                    : selectedBeneficiaries === 0
-                }
-                style={{
-                  margin: '0 16px',
-                  marginBottom: '15px',
-                }}
-              >
-                {formatMessage('payroll.summary.approveAndClose')}
-              </Button>
-              <Button
                 onClick={() => downloadPayrollData(payrollDetail.id, payrollDetail.name)}
                 variant="contained"
                 color="primary"
@@ -218,7 +202,7 @@ function PaymentVerifyApproveForPaymentDialog({
               <Button
                 onClick={() => rejectPayrollCallback(payrollDetail)}
                 variant="contained"
-                color="primary"
+                color="secondary"
                 style={{
                   margin: '0 16px',
                   marginBottom: '15px',
@@ -245,7 +229,7 @@ function PaymentVerifyApproveForPaymentDialog({
                       margin: '0 16px',
                     }}
                   >
-                    {formatMessage((payroll.status === PAYROLL_STATUS.PENDING_VERIFICATION) ? 'payroll.verify' : 'payroll.approve')}
+                    {formatMessage('payroll.verifyapprove.validate')}
                   </Button>
                 )}
               <Button
