@@ -15,7 +15,7 @@ import {
 
 function PaymentMainMenu(props) {
   const ROUTE_PAYMENT_REQUEST = 'paymentrequest';
-  const ROUTE_PAYMENT_NEW_PAYMENT = 'payment/newPayment';
+  const ROUTE_PAYMENT_NEW_PAYMENT = 'payroll/payroll';
   const entries = [
     {
       text: formatMessage(props.intl, MODULE_NAME, 'menu.payment.payments'),
@@ -24,7 +24,7 @@ function PaymentMainMenu(props) {
       filter: (rights) => rights.includes(RIGHT_PAYROLL_SEARCH),
     },
     {
-      text: formatMessage(props.intl, MODULE_NAME, 'menu.payment.add'),
+      text: formatMessage(props.intl, MODULE_NAME, 'menu.paymentrequest.add'),
       icon: <AddCircleOutline />,
       route: `/${ROUTE_PAYMENT_NEW_PAYMENT}`,
       filter: (rights) => rights.includes(RIGHT_PAYROLL_CREATE),

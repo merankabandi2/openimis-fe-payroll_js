@@ -18,7 +18,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
   MODULE_NAME,
-  BENEFIT_CONSUMPTION_STATUS,
   RIGHT_PAYROLL_SEARCH,
   PAYROLL_STATUS,
   APPROVED,
@@ -26,7 +25,7 @@ import {
 import {
   closePayroll, fetchPayroll, resolveTask, rejectPayroll,
 } from '../../../actions';
-import { mutationLabel } from '../../../utils/string-utils';
+import { mutationLabel, formatFrenchThousands } from '../../../utils/string-utils';
 import downloadPayroll from '../../../utils/export';
 
 function PaymentVerifyApproveForPaymentDialog({
@@ -34,7 +33,6 @@ function PaymentVerifyApproveForPaymentDialog({
   payroll,
   task,
   user,
-  closePayroll,
   rejectPayroll,
   payrollDetail,
   fetchPayroll,
@@ -45,8 +43,6 @@ function PaymentVerifyApproveForPaymentDialog({
   const [payrollUuid] = useState(payrollDetail?.id ?? null);
   const [isOpen, setIsOpen] = useState(false);
   const [totalBeneficiaries, setTotalBeneficiaries] = useState(0);
-  const [selectedBeneficiaries, setSelectedBeneficiaries] = useState(0);
-  const [approvedBeneficiaries, setApprovedBeneficiaries] = useState(0);
   const [totalBillAmount, setTotalBillAmount] = useState(0);
 
   const handleOpen = () => {
@@ -66,16 +62,8 @@ function PaymentVerifyApproveForPaymentDialog({
     if (isOpen && Object.keys(payroll).length > 0) {
       // Calculate total benefits and reconciled benefits
       const total = payroll.benefitConsumption.length;
-      const selected = payroll.benefitConsumption.filter(
-        (benefit) => benefit.status === BENEFIT_CONSUMPTION_STATUS.RECONCILED,
-      ).length;
-      const approved = payroll.benefitConsumption.filter(
-        (benefit) => benefit.status === BENEFIT_CONSUMPTION_STATUS.APPROVE_FOR_PAYMENT,
-      ).length;
 
       setTotalBeneficiaries(total);
-      setSelectedBeneficiaries(selected);
-      setApprovedBeneficiaries(approved);
 
       let totalAmount = 0;
       if (payroll && payroll.benefitConsumption) {
@@ -93,14 +81,6 @@ function PaymentVerifyApproveForPaymentDialog({
     }
   }, [isOpen, payroll]);
 
-  const closePayrollCallback = () => {
-    handleClose();
-    closePayroll(
-      payrollDetail,
-      formatMessageWithValues('payroll.mutation.closeLabel', mutationLabel(payrollDetail)),
-    );
-  };
-
   const rejectPayrollCallback = () => {
     handleClose();
     rejectPayroll(
@@ -112,6 +92,7 @@ function PaymentVerifyApproveForPaymentDialog({
   const resolveTaskCallback = (task, user) => {
     handleClose();
     resolveTask(task, 'Résolution de la tâche', user, APPROVED);
+    window.location.reload();
   };
 
   const downloadPayrollData = (payrollUuid, payrollName) => {
@@ -160,8 +141,8 @@ function PaymentVerifyApproveForPaymentDialog({
                 <Typography variant="h6" gutterBottom>
                   {formatMessage('payroll.summary.beneficiaries')}
                 </Typography>
-                <Typography variant="body1">
-                  { totalBeneficiaries }
+                <Typography variant="h1">
+                  { formatFrenchThousands(totalBeneficiaries) }
                 </Typography>
               </Paper>
             </Grid>
@@ -170,8 +151,9 @@ function PaymentVerifyApproveForPaymentDialog({
                 <Typography variant="h6" gutterBottom>
                   {formatMessage('payroll.summary.totalAmountForInvoice')}
                 </Typography>
-                <Typography variant="body1">
-                  {totalBillAmount}
+                <Typography variant="h1">
+                  {formatFrenchThousands(totalBillAmount)}
+                  BIF
                 </Typography>
               </Paper>
             </Grid>
