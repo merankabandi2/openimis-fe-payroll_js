@@ -101,6 +101,15 @@ function PaymentPointPage({
   const canSave = () => !mandatoryFieldsEmpty();
 
   const handleSave = () => {
+    if (editedPaymentPoint.paymentMethodConfig) {
+      if (paymentPoint?.json_ext) {
+        editedPaymentPoint.jsonExt.paymentMethodConfig = JSON.parse(editedPaymentPoint.paymentMethodConfig);
+      } else {
+        editedPaymentPoint.jsonExt = { paymentMethodConfig: JSON.parse(editedPaymentPoint.paymentMethodConfig) };
+      }
+      delete editedPaymentPoint.paymentMethodConfig;
+    }
+
     if (paymentPoint?.id) {
       updatePaymentPoint(
         editedPaymentPoint,

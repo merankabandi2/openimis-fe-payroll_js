@@ -211,6 +211,7 @@ function reducer(
         paymentPoint: parseData(action.payload.data.paymentPoint)?.map((paymentPoint) => ({
           ...paymentPoint,
           id: decodeId(paymentPoint.id),
+          paymentMethodConfig: paymentPoint?.jsonExt ? JSON.stringify(JSON.parse(paymentPoint?.jsonExt)?.paymentMethodConfig) : null,
         }))?.[0],
         errorPaymentPoint: formatGraphQLError(action.payload),
       };

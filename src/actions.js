@@ -114,6 +114,11 @@ const formatPaymentPointGQL = (paymentPoint) => `
   ${paymentPoint?.name ? `name: "${formatGQLString(paymentPoint.name)}"` : ''}
   ${paymentPoint?.location ? `locationId: ${decodeId(paymentPoint.location.id)}` : ''}
   ${paymentPoint?.paymentMethod ? `paymentMethod: "${paymentPoint.paymentMethod}"` : ''}
+ ${
+  paymentPoint?.jsonExt
+    ? `jsonExt: "${JSON.stringify(paymentPoint.jsonExt).replace(/"/g, '\\"')}"`
+    : ''
+}
   `;
 
 const formatPayrollGQL = (payroll) => `

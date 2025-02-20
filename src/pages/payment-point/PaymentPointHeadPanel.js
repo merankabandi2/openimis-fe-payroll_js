@@ -6,6 +6,7 @@ import { withTheme, withStyles } from '@material-ui/core/styles';
 
 import {
   TextInput,
+  TextAreaInput,
   FormPanel,
   withModulesManager,
   PublishedComponent,
@@ -35,7 +36,7 @@ class PaymentPointHeadPanel extends FormPanel {
       <Grid container className={classes.item}>
         <Grid xs={12}>
           <PublishedComponent
-            pubRef="location.DetailedLocation"
+            pubRef="location.CommuneLocation"
             withNull
             required
             readOnly={readOnly}
@@ -63,6 +64,20 @@ class PaymentPointHeadPanel extends FormPanel {
             inputProps={{ maxLength: MAX_LENGTH.NAME }}
             value={paymentPoint?.name}
             onChange={(name) => this.updateAttribute('name', name)}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={3}
+          className={classes.item}
+          hidden={(paymentPoint?.paymentMethod !== 'StrategyOnlinePaymentPush')}
+        >
+          <TextAreaInput
+            module="socialProtection"
+            label="paymentPoint.paymentMethod.config"
+            inputProps={{ maxLength: 1024 }}
+            value={paymentPoint?.paymentMethodConfig}
+            onChange={(v) => this.updateAttribute('paymentMethodConfig', v)}
           />
         </Grid>
       </Grid>
