@@ -3,11 +3,17 @@
 
 import React from 'react';
 
-import { PinDrop } from '@material-ui/icons';
+import { PinDrop, ListAlt, AddCircleOutline } from '@material-ui/icons';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 
 import { FormattedMessage } from '@openimis/fe-core';
-import { RIGHT_PAYMENT_POINT_SEARCH, RIGHT_PAYROLL_CREATE, RIGHT_PAYROLL_SEARCH } from './constants';
+import {
+  RIGHT_PAYMENT_POINT_SEARCH,
+  RIGHT_PAYROLL_CREATE,
+  RIGHT_PAYROLL_SEARCH,
+  ROUTE_PAYMENT_REQUEST,
+  ROUTE_PAYMENT_NEW_PAYMENT,
+} from './constants';
 import reducer from './reducer';
 import PaymentMainMenu from './menu/PaymentMainMenu';
 import messages_en from './translations/en.json';
@@ -72,6 +78,7 @@ const ROUTE_PAYROLLS_PENDING = 'payrollsPending';
 const ROUTE_PAYROLLS_RECONCILED = 'payrollsReconciled';
 const ROUTE_PAYROLL = 'payrolls/payroll';
 const ROUTE_PAYMENTREQUEST = 'paymentrequest';
+const MODULE_NAME = 'payroll';
 
 const DEFAULT_CONFIG = {
   translations: [{ key: 'en', messages: messages_en }],
@@ -137,6 +144,22 @@ const DEFAULT_CONFIG = {
       route: `/${ROUTE_PAYROLLS_RECONCILED}`,
       filter: (rights) => rights.includes(RIGHT_PAYROLL_SEARCH),
       id: 'legalAndFinance.payrollsReconciled',
+    },
+  ],
+  'paymentrequest.MainMenu': [
+    {
+      text: <FormattedMessage module={MODULE_NAME} id="menu.payment.payments" />,
+      icon: <ListAlt />,
+      route: `/${ROUTE_PAYMENT_REQUEST}`,
+      filter: (rights) => rights.includes(RIGHT_PAYROLL_SEARCH),
+      id: 'payroll.paymentrequests',
+    },
+    {
+      text: <FormattedMessage module={MODULE_NAME} id="menu.paymentrequest.add" />,
+      icon: <AddCircleOutline />,
+      route: `/${ROUTE_PAYMENT_NEW_PAYMENT}`,
+      filter: (rights) => rights.includes(RIGHT_PAYROLL_CREATE),
+      id: 'payroll.paymentrequest.add',
     },
   ],
   'core.MainMenu': [PaymentMainMenu],

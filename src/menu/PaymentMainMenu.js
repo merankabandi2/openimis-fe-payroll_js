@@ -11,23 +11,25 @@ import {
   MODULE_NAME,
   RIGHT_PAYROLL_CREATE,
   RIGHT_PAYROLL_SEARCH,
+  ROUTE_PAYMENT_REQUEST,
+  ROUTE_PAYMENT_NEW_PAYMENT,
 } from '../constants';
 
 function PaymentMainMenu(props) {
-  const ROUTE_PAYMENT_REQUEST = 'paymentrequest';
-  const ROUTE_PAYMENT_NEW_PAYMENT = 'payroll/payroll';
   const entries = [
     {
       text: formatMessage(props.intl, MODULE_NAME, 'menu.payment.payments'),
       icon: <ListAlt />,
       route: `/${ROUTE_PAYMENT_REQUEST}`,
       filter: (rights) => rights.includes(RIGHT_PAYROLL_SEARCH),
+      id: 'mainMenuPayment.paymentrequests',
     },
     {
       text: formatMessage(props.intl, MODULE_NAME, 'menu.paymentrequest.add'),
       icon: <AddCircleOutline />,
       route: `/${ROUTE_PAYMENT_NEW_PAYMENT}`,
       filter: (rights) => rights.includes(RIGHT_PAYROLL_CREATE),
+      id: 'mainMenuPayment.paymentrequest.add',
     },
   ];
   entries.push(
@@ -41,6 +43,7 @@ function PaymentMainMenu(props) {
       {...props}
       header={formatMessage(props.intl, MODULE_NAME, 'mainMenuPayment')}
       entries={entries}
+      menuId="mainMenuPayment"
     />
   );
 }

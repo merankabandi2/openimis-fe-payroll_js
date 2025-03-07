@@ -39,6 +39,9 @@ export const RIGHT_BILL_CREATE = 156102;
 export const RIGHT_BILL_UPDATE = 156103;
 export const RIGHT_BILL_DELETE = 156104;
 
+export const ROUTE_PAYMENT_REQUEST = 'paymentrequest';
+export const ROUTE_PAYMENT_NEW_PAYMENT = 'payroll/payroll';
+
 export const INVOICE_BILL_ROUTE = 'bill.route.bill';
 export const GET_SUBJECT_AND_THIRDPARTY_TYPE_PICKER_REF = 'bill.util.getSubjectAndThirdpartyTypePicker';
 export const ENUM_PREFIX_LENGTH = 2;
