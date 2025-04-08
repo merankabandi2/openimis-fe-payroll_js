@@ -104,21 +104,19 @@ function PayrollFilter({
           ])}
         />
       </Grid>
-      <Grid item xs={3} className={classes.item}>
+      <Grid item xs={12} className={classes.item}>
         <ControlledField
           module="payroll"
           id="payroll.location"
           field={(
-            <Grid xs={12}>
-              <PublishedComponent
-                pubRef="location.LocationFilter"
-                withNull
-                filters={filters}
-                onChangeFilters={onChangeFilters}
-                anchor="parentLocation"
-              />
-            </Grid>
-            )}
+            <PublishedComponent
+              pubRef="location.LocationFilter"
+              withNull
+              filters={filters}
+              onChangeFilters={onChangeFilters}
+              anchor="parentLocation"
+            />
+          )}
         />
       </Grid>
       <Grid item xs={2} className={classes.item}>
