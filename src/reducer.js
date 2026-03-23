@@ -22,6 +22,7 @@ export const ACTION_TYPE = {
   SEARCH_PAYMENT_POINTS: 'PAYROLL_PAYMENT_POINTS',
   CREATE_PAYROLL: 'PAYROLL_MUTATION_CREATE_PAYROLL',
   DELETE_PAYROLL: 'PAYROLL_MUTATION_DELETE_PAYROLL',
+  RETRIGGER_PAYROLL: 'PAYROLL_MUTATION_RETRIGGER_PAYROLL',
   SEARCH_PAYROLLS: 'PAYROLL_PAYROLLS',
   GET_PAYMENT_POINT: 'PAYROLL_PAYMENT_POINT',
   GET_PAYROLL: 'PAYROLL_GET_PAYROLL',
@@ -49,6 +50,7 @@ export const MUTATION_SERVICE = {
     CLOSE: 'closePayroll',
     REJECT: 'rejectPayroll',
     MAKE_PAYMENT: 'makePaymentForPayroll',
+    RETRIGGER: 'retriggerPayroll',
   },
   BENEFIT_CONSUMPTION: {
     DELETE: 'deleteBenefitConsumption',
@@ -452,6 +454,8 @@ function reducer(
       return dispatchMutationResp(state, MUTATION_SERVICE.PAYROLL.CREATE, action);
     case SUCCESS(ACTION_TYPE.DELETE_PAYROLL):
       return dispatchMutationResp(state, MUTATION_SERVICE.PAYROLL.DELETE, action);
+    case SUCCESS(ACTION_TYPE.RETRIGGER_PAYROLL):
+      return dispatchMutationResp(state, MUTATION_SERVICE.PAYROLL.RETRIGGER, action);
     case SUCCESS(ACTION_TYPE.DELETE_BENEFIT_CONSUMPTION):
       return dispatchMutationResp(state, MUTATION_SERVICE.BENEFIT_CONSUMPTION.DELETE, action);
     default:

@@ -67,7 +67,7 @@ const PAYROLL_PROJECTION = (modulesManager) => [
   `paymentPoint { ${PAYMENT_POINT_PROJECTION(modulesManager).join(' ')} }`,
   'paymentCycle { code, startDate, endDate }',
   // eslint-disable-next-line max-len
-  'benefitConsumption{id, status, code, dateDue, receipt, individual {firstName, lastName}, benefitAttachment{bill{id, code, terms, amountTotal}}}',
+  'benefitConsumption{status, benefitAttachment{bill{amountTotal}}}',
   'jsonExt',
   'status',
   'dateValidFrom',
@@ -114,7 +114,7 @@ const formatPayrollGQL = (payroll) => `
   ${payroll?.paymentPlan ? `paymentPlanId: "${decodeId(payroll.paymentPlan.id)}"` : ''}
   ${payroll?.paymentCycle ? `paymentCycleId: "${decodeId(payroll.paymentCycle.id)}"` : ''}
   ${payroll?.paymentMethod ? `paymentMethod: "${payroll.paymentMethod}"` : ''}
-  ${`status: ${PAYROLL_STATUS.PENDING_APPROVAL}`}
+  ${`status: ${PAYROLL_STATUS.GENERATING}`}
   ${
   payroll?.jsonExt
     ? `jsonExt: ${JSON.stringify(payroll.jsonExt)}`
@@ -310,6 +310,17 @@ export function makePaymentForPayroll(payroll, clientMutationLabel) {
     MUTATION_SERVICE.PAYROLL.MAKE_PAYMENT,
     payrollUuids,
     ACTION_TYPE.MAKE_PAYMENT_PAYROLL,
+    clientMutationLabel,
+  );
+}
+
+export function retriggerPayroll(payroll, clientMutationLabel) {
+  const uuid = isBase64Encoded(payroll.id) ? decodeId(payroll?.id) : payroll?.id;
+  const mutationInput = `id: "${uuid}"`;
+  return PERFORM_MUTATION(
+    MUTATION_SERVICE.PAYROLL.RETRIGGER,
+    mutationInput,
+    ACTION_TYPE.RETRIGGER_PAYROLL,
     clientMutationLabel,
   );
 }

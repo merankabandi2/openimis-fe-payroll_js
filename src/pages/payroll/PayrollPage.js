@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/styles';
+import ReplayIcon from '@material-ui/icons/Replay';
 
 import {
   Form,
@@ -17,10 +18,11 @@ import {
   fetchPayroll,
   clearPayroll,
   createPayroll,
+  retriggerPayroll,
 } from '../../actions';
 import {
   MODULE_NAME, PAYROLL_FROM_FAILED_INVOICES_URL_PARAM,
-  RIGHT_PAYROLL_CREATE,
+  RIGHT_PAYROLL_CREATE, PAYROLL_STATUS,
 } from '../../constants';
 import { ACTION_TYPE } from '../../reducer';
 import { mutationLabel, pageTitle } from '../../utils/string-utils';
@@ -41,6 +43,7 @@ function PayrollPage({
   payroll,
   fetchPayroll,
   createPayroll,
+  retriggerPayroll,
   clearPayroll,
   clearConfirm,
   createPayrollFromFailedInvoices,
@@ -58,6 +61,7 @@ function PayrollPage({
   const [readOnly, setReadOnly] = useState(false);
   const [isPayrollFromFailedInvoices, setIsPayrollFromFailedInvoices] = useState(false);
   const [confirmedAction, setConfirmedAction] = useState(() => null);
+  const [isRetriggering, setIsRetriggering] = useState(false);
   const prevSubmittingMutationRef = useRef();
 
   const back = () => history.goBack();
@@ -89,6 +93,12 @@ function PayrollPage({
       journalize(mutation);
       if (mutation?.actionType === ACTION_TYPE.DELETE_PAYROLL) {
         back();
+      }
+      if (mutation?.actionType === ACTION_TYPE.RETRIGGER_PAYROLL) {
+        setIsRetriggering(false);
+        if (payrollUuid) {
+          fetchPayroll(modulesManager, [`id: "${payrollUuid}"`]);
+        }
       }
       if (mutation?.clientMutationId && (!payrollUuid || isPayrollFromFailedInvoices)) {
         fetchPayroll(modulesManager, [`clientMutationId: "${mutation.clientMutationId}"`]);
@@ -144,38 +154,51 @@ function PayrollPage({
     }
   };
 
-  const actions = [];
+  const actions = [
+    payroll?.status === PAYROLL_STATUS.FAILED && {
+      icon: <ReplayIcon />,
+      tooltip: formatMessage('tooltip.retrigger'),
+      disabled: isRetriggering,
+      onClick: () => {
+        setIsRetriggering(true);
+        retriggerPayroll(
+          payroll,
+          formatMessageWithValues('payroll.mutation.retriggerLabel', mutationLabel(payroll)),
+        );
+      },
+    },
+  ].filter(Boolean);
 
   return (
     rights.includes(RIGHT_PAYROLL_CREATE) && (
-    <div className={classes.page}>
-      <Form
-        key={payrollUuid}
-        module="payroll"
-        title={formatMessageWithValues('payrollPage.title', pageTitle(payroll))}
-        titleParams={pageTitle(payroll)}
-        openDirty={isPayrollFromFailedInvoices ? true : !payrollUuid}
-        benefitPlan={editedPayroll}
-        edited={editedPayroll}
-        onEditedChanged={setEditedPayroll}
-        back={!isInTask && back}
-        mandatoryFieldsEmpty={mandatoryFieldsEmpty}
-        canSave={canSave}
-        save={handleSave}
-        HeadPanel={PayrollHeadPanel}
-        Panels={[PayrollTab]}
-        rights={rights}
-        actions={actions}
-        setConfirmedAction={setConfirmedAction}
-        payrollUuid={payrollUuid}
-        saveTooltip={formatMessage('tooltip.save')}
-        isInTask={!!taskPayrollUuid}
-        payroll={payroll}
-        readOnly={readOnly}
-        isPayrollFromFailedInvoices={isPayrollFromFailedInvoices}
-        benefitPlanId={benefitPlanId}
-      />
-    </div>
+      <div className={classes.page}>
+        <Form
+          key={payrollUuid}
+          module="payroll"
+          title={formatMessageWithValues('payrollPage.title', pageTitle(payroll))}
+          titleParams={pageTitle(payroll)}
+          openDirty={isPayrollFromFailedInvoices ? true : !payrollUuid}
+          benefitPlan={editedPayroll}
+          edited={editedPayroll}
+          onEditedChanged={setEditedPayroll}
+          back={!isInTask && back}
+          mandatoryFieldsEmpty={mandatoryFieldsEmpty}
+          canSave={canSave}
+          save={handleSave}
+          HeadPanel={PayrollHeadPanel}
+          Panels={[PayrollTab]}
+          rights={rights}
+          actions={actions}
+          setConfirmedAction={setConfirmedAction}
+          payrollUuid={payrollUuid}
+          saveTooltip={formatMessage('tooltip.save')}
+          isInTask={!!taskPayrollUuid}
+          payroll={payroll}
+          readOnly={readOnly}
+          isPayrollFromFailedInvoices={isPayrollFromFailedInvoices}
+          benefitPlanId={benefitPlanId}
+        />
+      </div>
     )
   );
 }
@@ -183,6 +206,7 @@ function PayrollPage({
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   fetchPayroll,
   createPayroll,
+  retriggerPayroll,
   clearPayroll,
   coreConfirm,
   clearConfirm,
