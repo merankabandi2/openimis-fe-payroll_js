@@ -22,6 +22,7 @@ import {
   RIGHT_PAYROLL_SEARCH, ROWS_PER_PAGE_OPTIONS, PAYROLL_STATUS,
 } from '../../constants';
 import { mutationLabel, pageTitle } from '../../utils/string-utils';
+import { ACTION_TYPE } from '../../reducer';
 import {
   fetchPayrolls, deletePayrolls, retriggerPayroll,
 } from '../../actions';
@@ -78,7 +79,7 @@ function PayrollSearcher({
   useEffect(() => {
     if (prevSubmittingMutationRef.current && !submittingMutation) {
       journalize(mutation);
-      if (retriggeringPayrollUuids.length > 0) {
+      if (mutation?.actionType === ACTION_TYPE.RETRIGGER_PAYROLL && retriggeringPayrollUuids.length > 0) {
         setRetriggeringPayrollUuids([]);
       }
     }
