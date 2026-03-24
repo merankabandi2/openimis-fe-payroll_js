@@ -134,9 +134,11 @@ class PayrollHeadPanel extends FormPanel {
           if (typeof ext === 'string') {
             try { ext = JSON.parse(ext); } catch (e) { ext = null; }
           }
+          const raw = Number(ext?.progress);
+          const progress = Number.isFinite(raw) ? Math.min(100, Math.max(0, raw)) : 0;
           return (
             <div style={{ padding: '0 16px 16px 16px' }}>
-              <LinearProgress variant="determinate" value={ext?.progress || 0} />
+              <LinearProgress variant="determinate" value={progress} />
             </div>
           );
         })()}

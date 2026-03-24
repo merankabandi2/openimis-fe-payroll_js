@@ -139,6 +139,11 @@ function PayrollSearcher({
     try { return JSON.parse(jsonExt); } catch (e) { return null; }
   };
 
+  const clampProgress = (ext) => {
+    const raw = Number(ext?.progress);
+    return Number.isFinite(raw) ? Math.min(100, Math.max(0, raw)) : 0;
+  };
+
   const itemFormatters = () => [
     (payroll) => payroll.name,
     (payroll) => (payroll.benefitPlan
@@ -151,7 +156,7 @@ function PayrollSearcher({
         return (
           <div style={{ width: '100%', minWidth: 100 }}>
             {formatMessage(`payroll.payrollStatusPicker.${payroll.status}`)}
-            <LinearProgress variant="determinate" value={ext?.progress || 0} />
+            <LinearProgress variant="determinate" value={clampProgress(ext)} />
           </div>
         );
       }
