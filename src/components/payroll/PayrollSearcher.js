@@ -22,6 +22,7 @@ import {
   RIGHT_PAYROLL_SEARCH, ROWS_PER_PAGE_OPTIONS, PAYROLL_STATUS,
 } from '../../constants';
 import { mutationLabel, pageTitle } from '../../utils/string-utils';
+import { getProgress } from '../../utils/jsonExt';
 import { ACTION_TYPE } from '../../reducer';
 import {
   fetchPayrolls, deletePayrolls, retriggerPayroll,
@@ -133,17 +134,6 @@ function PayrollSearcher({
     );
   };
 
-  const parseJsonExt = (jsonExt) => {
-    if (!jsonExt) return null;
-    if (typeof jsonExt === 'object') return jsonExt;
-    try { return JSON.parse(jsonExt); } catch (e) { return null; }
-  };
-
-  const clampProgress = (ext) => {
-    const raw = Number(ext?.progress);
-    return Number.isFinite(raw) ? Math.min(100, Math.max(0, raw)) : 0;
-  };
-
   const itemFormatters = () => [
     (payroll) => payroll.name,
     (payroll) => (payroll.benefitPlan
@@ -152,11 +142,10 @@ function PayrollSearcher({
       ? `${payroll.paymentPoint.name}` : ''),
     (payroll) => {
       if (payroll.status === PAYROLL_STATUS.GENERATING) {
-        const ext = parseJsonExt(payroll.jsonExt);
         return (
           <div style={{ width: '100%', minWidth: 100 }}>
             {formatMessage(`payroll.payrollStatusPicker.${payroll.status}`)}
-            <LinearProgress variant="determinate" value={clampProgress(ext)} />
+            <LinearProgress variant="determinate" value={getProgress(payroll.jsonExt)} />
           </div>
         );
       }

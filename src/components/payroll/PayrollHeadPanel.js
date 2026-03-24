@@ -13,6 +13,7 @@ import {
   withModulesManager,
 } from '@openimis/fe-core';
 import FilterDialog from './FilterDialog';
+import { getProgress } from '../../utils/jsonExt';
 import PayrollStatusPicker from './PayrollStatusPicker';
 import PaymentMethodPicker from '../../pickers/PaymentMethodPicker';
 import { PAYROLL_STATUS } from '../../constants';
@@ -129,19 +130,11 @@ class PayrollHeadPanel extends FormPanel {
             />
           </Grid>
         </Grid>
-        {payroll?.status === PAYROLL_STATUS.GENERATING && (() => {
-          let ext = payroll.jsonExt;
-          if (typeof ext === 'string') {
-            try { ext = JSON.parse(ext); } catch (e) { ext = null; }
-          }
-          const raw = Number(ext?.progress);
-          const progress = Number.isFinite(raw) ? Math.min(100, Math.max(0, raw)) : 0;
-          return (
-            <div style={{ padding: '0 16px 16px 16px' }}>
-              <LinearProgress variant="determinate" value={progress} />
-            </div>
-          );
-        })()}
+        {payroll?.status === PAYROLL_STATUS.GENERATING && (
+          <div style={{ padding: '0 16px 16px 16px' }}>
+            <LinearProgress variant="determinate" value={getProgress(payroll.jsonExt)} />
+          </div>
+        )}
         <Divider />
         {!isPayrollFromFailedInvoices && (
           <FilterDialog
