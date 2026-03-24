@@ -178,7 +178,6 @@ function PayrollSearcher({
       const isDeletable = [
         PAYROLL_STATUS.PENDING_APPROVAL,
         PAYROLL_STATUS.FAILED,
-        PAYROLL_STATUS.GENERATING,
       ].includes(payroll.status);
       return (
         <Tooltip title={formatMessage('tooltip.delete')}>
