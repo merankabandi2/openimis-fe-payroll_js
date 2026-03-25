@@ -183,10 +183,18 @@ function PayrollPage({
     rights.includes(RIGHT_PAYROLL_CREATE) && (
       <div className={classes.page}>
         {triggersDown && (
-          <div style={{
-            background: '#fff3e0', border: '1px solid #ff9800', borderRadius: 4,
-            padding: '12px 16px', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8,
-          }}>
+          <div
+            style={{
+              background: '#fff3e0',
+              border: '1px solid #ff9800',
+              borderRadius: 4,
+              padding: '12px 16px',
+              margin: '0 0 16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
             <WarningIcon style={{ color: '#ff9800' }} />
             <Typography variant="body2">{systemStatus.message}</Typography>
           </div>
