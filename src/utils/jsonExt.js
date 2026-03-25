@@ -1,7 +1,7 @@
 export const parseJsonExt = (jsonExt) => {
   if (!jsonExt) return null;
   if (typeof jsonExt === 'object') return jsonExt;
-  try { return JSON.parse(jsonExt); } catch (e) { return null; }
+  try { return JSON.parse(jsonExt); } catch { return null; }
 };
 
 export const getProgress = (jsonExt) => {
