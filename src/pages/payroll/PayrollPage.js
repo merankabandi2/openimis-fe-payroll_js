@@ -169,7 +169,7 @@ function PayrollPage({
       icon: <ReplayIcon />,
       tooltip: formatMessage('tooltip.retrigger'),
       disabled: isRetriggering || triggersDown,
-      onClick: () => {
+      doIt: () => {
         setIsRetriggering(true);
         retriggerPayroll(
           payroll,
