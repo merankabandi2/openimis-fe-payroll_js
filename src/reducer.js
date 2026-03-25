@@ -469,7 +469,7 @@ function reducer(
     case ERROR(ACTION_TYPE.GET_SYSTEM_STATUS):
       return {
         ...state,
-        systemStatus: { triggersSynced: false, message: 'Unable to verify system status.' },
+        systemStatus: { triggersSynced: false, message: formatServerError(action.payload) },
       };
     default:
       return state;

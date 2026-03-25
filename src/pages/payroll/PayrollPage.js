@@ -202,7 +202,7 @@ function PayrollPage({
           onEditedChanged={setEditedPayroll}
           back={!isInTask && back}
           mandatoryFieldsEmpty={mandatoryFieldsEmpty}
-          canSave={canSave && !triggersDown}
+          canSave={() => canSave() && !triggersDown}
           save={handleSave}
           HeadPanel={PayrollHeadPanel}
           Panels={[PayrollTab]}
