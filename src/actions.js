@@ -13,7 +13,6 @@ import {
   CLEAR, ERROR, REQUEST, SUCCESS,
 } from './utils/action-type';
 import { isBase64Encoded } from './utils/advanced-filters-utils';
-import { PAYROLL_STATUS } from './constants';
 
 export const PAYMENT_POINT_PROJECTION = (modulesManager) => [
   'id',
@@ -114,7 +113,6 @@ const formatPayrollGQL = (payroll) => `
   ${payroll?.paymentPlan ? `paymentPlanId: "${decodeId(payroll.paymentPlan.id)}"` : ''}
   ${payroll?.paymentCycle ? `paymentCycleId: "${decodeId(payroll.paymentCycle.id)}"` : ''}
   ${payroll?.paymentMethod ? `paymentMethod: "${payroll.paymentMethod}"` : ''}
-  ${`status: ${PAYROLL_STATUS.GENERATING}`}
   ${
   payroll?.jsonExt
     ? `jsonExt: ${JSON.stringify(payroll.jsonExt)}`
@@ -209,6 +207,11 @@ export function fetchPayrolls(modulesManager, params) {
 export function fetchPayroll(modulesManager, params) {
   const payload = formatPageQueryWithCount('payroll', params, PAYROLL_PROJECTION(modulesManager));
   return graphql(payload, ACTION_TYPE.GET_PAYROLL);
+}
+
+export function fetchPayrollSystemStatus() {
+  const payload = formatQuery('payrollSystemStatus', null, ['triggersSynced', 'message']);
+  return graphql(payload, ACTION_TYPE.GET_SYSTEM_STATUS);
 }
 
 export function deletePayrolls(payroll, clientMutationLabel) {

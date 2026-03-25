@@ -36,6 +36,7 @@ export const ACTION_TYPE = {
   GET_PAYROLL_PAYMENT_FILES: 'GET_PAYROLL_PAYMENT_FILES',
   BENEFITS_SUMMARY: 'PAYROLL_BENEFITS_SUMMARY',
   DELETE_BENEFIT_CONSUMPTION: 'BENEFIT_CONSUMPTION_MUTATION_DELETE_BENEFIT_CONSUMPTION',
+  GET_SYSTEM_STATUS: 'PAYROLL_SYSTEM_STATUS',
 };
 
 export const MUTATION_SERVICE = {
@@ -120,6 +121,8 @@ const STORE_STATE = {
   benefitsSummaryError: null,
   fetchingBenefitsSummary: true,
   fetchedBenefitsSummary: false,
+
+  systemStatus: null,
 };
 
 function reducer(
@@ -458,6 +461,16 @@ function reducer(
       return dispatchMutationResp(state, MUTATION_SERVICE.PAYROLL.RETRIGGER, action);
     case SUCCESS(ACTION_TYPE.DELETE_BENEFIT_CONSUMPTION):
       return dispatchMutationResp(state, MUTATION_SERVICE.BENEFIT_CONSUMPTION.DELETE, action);
+    case SUCCESS(ACTION_TYPE.GET_SYSTEM_STATUS):
+      return {
+        ...state,
+        systemStatus: action.payload.data.payrollSystemStatus,
+      };
+    case ERROR(ACTION_TYPE.GET_SYSTEM_STATUS):
+      return {
+        ...state,
+        systemStatus: { triggersSynced: false, message: 'Unable to verify system status.' },
+      };
     default:
       return state;
   }

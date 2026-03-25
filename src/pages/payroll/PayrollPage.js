@@ -3,7 +3,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/styles';
+import { Typography } from '@material-ui/core';
 import ReplayIcon from '@material-ui/icons/Replay';
+import WarningIcon from '@material-ui/icons/Warning';
 
 import {
   Form,
@@ -19,6 +21,7 @@ import {
   clearPayroll,
   createPayroll,
   retriggerPayroll,
+  fetchPayrollSystemStatus,
 } from '../../actions';
 import {
   MODULE_NAME, PAYROLL_FROM_FAILED_INVOICES_URL_PARAM,
@@ -41,9 +44,11 @@ function PayrollPage({
   submittingMutation,
   mutation,
   payroll,
+  systemStatus,
   fetchPayroll,
   createPayroll,
   retriggerPayroll,
+  fetchPayrollSystemStatus,
   clearPayroll,
   clearConfirm,
   createPayrollFromFailedInvoices,
@@ -65,6 +70,11 @@ function PayrollPage({
   const prevSubmittingMutationRef = useRef();
 
   const back = () => history.goBack();
+  const triggersDown = systemStatus && !systemStatus.triggersSynced;
+
+  useEffect(() => {
+    fetchPayrollSystemStatus();
+  }, []);
 
   useEffect(() => {
     if (createPayrollFromFailedInvoices === PAYROLL_FROM_FAILED_INVOICES_URL_PARAM) {
@@ -91,14 +101,14 @@ function PayrollPage({
   useEffect(() => {
     if (prevSubmittingMutationRef.current && !submittingMutation) {
       journalize(mutation);
-      if (mutation?.actionType === ACTION_TYPE.DELETE_PAYROLL) {
-        back();
-      }
       if (mutation?.actionType === ACTION_TYPE.RETRIGGER_PAYROLL) {
         setIsRetriggering(false);
         if (payrollUuid) {
           fetchPayroll(modulesManager, [`id: "${payrollUuid}"`]);
         }
+      }
+      if (mutation?.actionType === ACTION_TYPE.DELETE_PAYROLL) {
+        back();
       }
       if (mutation?.clientMutationId && (!payrollUuid || isPayrollFromFailedInvoices)) {
         fetchPayroll(modulesManager, [`clientMutationId: "${mutation.clientMutationId}"`]);
@@ -158,7 +168,7 @@ function PayrollPage({
     payroll?.status === PAYROLL_STATUS.FAILED && {
       icon: <ReplayIcon />,
       tooltip: formatMessage('tooltip.retrigger'),
-      disabled: isRetriggering,
+      disabled: isRetriggering || triggersDown,
       onClick: () => {
         setIsRetriggering(true);
         retriggerPayroll(
@@ -172,6 +182,15 @@ function PayrollPage({
   return (
     rights.includes(RIGHT_PAYROLL_CREATE) && (
       <div className={classes.page}>
+        {triggersDown && (
+          <div style={{
+            background: '#fff3e0', border: '1px solid #ff9800', borderRadius: 4,
+            padding: '12px 16px', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <WarningIcon style={{ color: '#ff9800' }} />
+            <Typography variant="body2">{systemStatus.message}</Typography>
+          </div>
+        )}
         <Form
           key={payrollUuid}
           module="payroll"
@@ -183,7 +202,7 @@ function PayrollPage({
           onEditedChanged={setEditedPayroll}
           back={!isInTask && back}
           mandatoryFieldsEmpty={mandatoryFieldsEmpty}
-          canSave={canSave}
+          canSave={canSave && !triggersDown}
           save={handleSave}
           HeadPanel={PayrollHeadPanel}
           Panels={[PayrollTab]}
@@ -207,6 +226,7 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
   fetchPayroll,
   createPayroll,
   retriggerPayroll,
+  fetchPayrollSystemStatus,
   clearPayroll,
   coreConfirm,
   clearConfirm,
@@ -222,6 +242,7 @@ const mapStateToProps = (state, props) => ({
   submittingMutation: state.payroll.submittingMutation,
   mutation: state.payroll.mutation,
   payroll: state.payroll.payroll,
+  systemStatus: state.payroll.systemStatus,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PayrollPage);
