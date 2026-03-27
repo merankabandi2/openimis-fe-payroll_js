@@ -64,6 +64,7 @@ const DEFAULT_CONFIG = {
     { key: 'payroll.PaymentPointPicker', ref: PaymentPointPicker },
     { key: 'payroll.PaymentPointPicker.projection', ref: ['id', 'name', 'location'] },
     { key: 'payroll.benefitConsumptionPayrollSearcher', ref: BenefitConsumptionPayrollSearcher },
+    { key: 'payroll.PayrollPage', ref: PayrollPage },
     { key: 'payroll.payrollCreateRight', ref: RIGHT_PAYROLL_CREATE },
   ],
   'core.Router': [
@@ -75,7 +76,7 @@ const DEFAULT_CONFIG = {
     { path: ROUTE_PAYROLLS_RECONCILED, component: ReconciledPayrollsPage },
     {
       path: `${ROUTE_PAYROLL}/:payroll_uuid?/:createPayrollFromFailedInvoices?/:benefitPlanId?`,
-      component: PayrollPage,
+      component: 'payroll.PayrollPage',
     },
   ],
   'invoice.MainMenu': [
