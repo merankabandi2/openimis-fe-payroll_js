@@ -56,6 +56,8 @@ function PayrollPage({
   clearConfirm,
   createPayrollFromFailedInvoices,
   journalize,
+  // No route or mount of this module supplies it; the head panel falls back
+  // to the payment plan's own benefit plan when it is absent.
   benefitPlanId,
 }) {
   const modulesManager = useModulesManager();
@@ -162,9 +164,6 @@ function PayrollPage({
       editedPayroll,
       formatMessageWithValues('payroll.mutation.create', mutationLabel(payroll)),
     );
-    if (benefitPlanId) {
-      back();
-    }
   };
 
   const actions = [
@@ -235,7 +234,6 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 const mapStateToProps = (state, props) => ({
   statePayrollUuid: props?.match?.params?.payroll_uuid === 'null' ? null : props?.match?.params.payroll_uuid,
   createPayrollFromFailedInvoices: props?.match?.params?.createPayrollFromFailedInvoices,
-  benefitPlanId: props?.match?.params?.benefitPlanId,
   rights: state.core?.user?.i_user?.rights ?? [],
   confirmed: state.core.confirmed,
   submittingMutation: state.payroll.submittingMutation,

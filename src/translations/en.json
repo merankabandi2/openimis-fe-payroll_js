@@ -21,6 +21,8 @@
   "payroll.payroll.status": "Status",
   "payroll.payroll.dateValidFrom": "Valid From",
   "payroll.payroll.dateValidTo": "Valid To",
+  "payroll.payroll.projects": "Projects",
+  "payroll.payroll.projects.placeholder": "Select the projects to include",
   "payroll.payroll.paymentPlan": "Payment Plan",
   "payroll.payroll.benefitPlan": "Benefit Plan",
   "payroll.payroll.customFilter": "Custom Filter",

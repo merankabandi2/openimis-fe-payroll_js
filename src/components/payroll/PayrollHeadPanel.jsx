@@ -14,10 +14,24 @@ import {
   FormattedMessage,
   GRID_RESPONSIVE_STANDARD,
 } from '@openimis/fe-core';
+import AdvancedFiltersDialog from './AdvancedFiltersDialog';
 import PayrollStatusPicker from './PayrollStatusPicker';
 import PaymentMethodPicker from '../../pickers/PaymentMethodPicker';
 import GenerationProgress from './GenerationProgress';
-import { PAYROLL_STATUS } from '../../constants';
+import { CLEARED_STATE_FILTER, PAYROLL_STATUS } from '../../constants';
+
+// Parses jsonExt whether it arrives as a plain object or a (possibly double-encoded) JSON string.
+const parseJsonExt = (jsonExt) => {
+  try {
+    let parsed = typeof jsonExt === 'string' ? JSON.parse(jsonExt) : (jsonExt ?? {});
+    if (typeof parsed === 'string') {
+      parsed = JSON.parse(parsed);
+    }
+    return parsed ?? {};
+  } catch (error) {
+    return {};
+  }
+};
 
 const StyledPayrollHeadPanel = styled('div')(({ theme }) => ({
   '& .tableTitle': theme.table?.title ?? {},
@@ -34,10 +48,70 @@ const StyledPayrollHeadPanel = styled('div')(({ theme }) => ({
 }));
 
 class PayrollHeadPanel extends FormPanel {
+  constructor(props) {
+    super(props);
+    this.state = {
+      appliedCustomFilters: [CLEARED_STATE_FILTER],
+      appliedFiltersRowStructure: [CLEARED_STATE_FILTER],
+    };
+  }
+
+  componentDidMount() {
+    const { edited } = this.props;
+    const { jsonExt } = edited ?? {};
+    if (jsonExt) {
+      const filters = this.getDefaultAppliedCustomFilters(jsonExt);
+      this.setState({ appliedCustomFilters: filters, appliedFiltersRowStructure: filters });
+    }
+  }
+
+  updateJsonExt = (value) => {
+    this.updateAttributes({ jsonExt: value });
+  };
+
+  // eslint-disable-next-line class-methods-use-this
+  getDefaultAppliedCustomFilters = (jsonExt) => {
+    const jsonData = parseJsonExt(jsonExt);
+    const advancedCriteria = jsonData.advanced_criteria || [];
+    return advancedCriteria.map(({ custom_filter_condition }) => {
+      const [field, filter, typeValue] = custom_filter_condition.split('__');
+      const [type, value] = typeValue.split('=');
+      return {
+        custom_filter_condition, field, filter, type, value,
+      };
+    });
+  };
+
+  setAppliedCustomFilters = (appliedCustomFilters) => {
+    this.setState({ appliedCustomFilters });
+  };
+
+  setAppliedFiltersRowStructure = (appliedFiltersRowStructure) => {
+    this.setState({ appliedFiltersRowStructure });
+  };
+
+  handleProjectsChange = (projects) => {
+    const { edited } = this.props;
+    const jsonData = parseJsonExt(edited?.jsonExt);
+    const filterCriteria = { ...(jsonData.filter_criteria || {}) };
+    if (projects && projects.length > 0) {
+      filterCriteria.project_ids = projects.map((project) => project.id);
+    } else {
+      delete filterCriteria.project_ids;
+    }
+    if (Object.keys(filterCriteria).length > 0) {
+      jsonData.filter_criteria = filterCriteria;
+    } else {
+      delete jsonData.filter_criteria;
+    }
+    this.updateJsonExt(JSON.stringify(jsonData));
+  };
+
   render() {
     const {
-      edited, classes, intl, readOnly, isPayrollFromFailedInvoices, benefitPlanId,
+      edited, intl, readOnly, isPayrollFromFailedInvoices, benefitPlanId,
     } = this.props;
+    const { appliedFiltersRowStructure } = this.state;
     const payroll = { ...edited };
 
     let effectiveBenefitPlanId = benefitPlanId;
@@ -47,6 +121,8 @@ class PayrollHeadPanel extends FormPanel {
         effectiveBenefitPlanId = JSON.parse(benefitPlan)?.id;
       }
     }
+    const selectedProjects = (parseJsonExt(payroll.jsonExt).filter_criteria?.project_ids || [])
+      .map((id) => ({ id }));
     return (
       <StyledPayrollHeadPanel>
         <Grid container className="form">
@@ -136,6 +212,22 @@ class PayrollHeadPanel extends FormPanel {
               readOnly={readOnly}
             />
           </Grid>
+          {!isPayrollFromFailedInvoices && (
+            <Grid size={GRID_RESPONSIVE_STANDARD} className="item">
+              <PublishedComponent
+                pubRef="socialProtection.ProjectPicker"
+                benefitPlanId={effectiveBenefitPlanId}
+                multiple
+                withLabel
+                label={formatMessage(intl, 'payroll', 'payroll.projects')}
+                withPlaceholder
+                placeholder={formatMessage(intl, 'payroll', 'payroll.projects.placeholder')}
+                value={selectedProjects}
+                onChange={this.handleProjectsChange}
+                readOnly={readOnly}
+              />
+            </Grid>
+          )}
         </Grid>
         {payroll?.status === PAYROLL_STATUS.GENERATING && (
           <div className="item">
@@ -168,13 +260,12 @@ class PayrollHeadPanel extends FormPanel {
                     moduleName="social_protection"
                     objectType="BenefitPlan"
                     setAppliedCustomFilters={this.setAppliedCustomFilters}
-                    appliedCustomFilters={appliedCustomFilters}
                     appliedFiltersRowStructure={appliedFiltersRowStructure}
                     setAppliedFiltersRowStructure={this.setAppliedFiltersRowStructure}
                     updateAttributes={this.updateJsonExt}
                     getDefaultAppliedCustomFilters={() => this.getDefaultAppliedCustomFilters(payroll.jsonExt)}
                     readOnly={readOnly}
-                    edited={this.props.edited}
+                    edited={edited}
                   />
 
                 </Grid>
