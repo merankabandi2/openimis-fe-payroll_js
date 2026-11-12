@@ -7,6 +7,7 @@ import {
   Helmet,
   useModulesManager,
   useTranslations,
+  overridable,
 } from '@openimis/fe-core';
 import {
   MODULE_NAME,
@@ -33,4 +34,4 @@ function PendingPayrollsPage() {
   );
 }
 
-export default PendingPayrollsPage;
+export default overridable('payroll.PendingPayrollsPage')(PendingPayrollsPage);

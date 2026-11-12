@@ -25,6 +25,7 @@ vi.mock('@openimis/fe-core', () => ({
   coreConfirm: () => ({ type: 'TEST_CONFIRM' }),
   journalize: () => ({ type: 'TEST_JOURNALIZE' }),
   GetIconComponent: () => () => null,
+  overridable: () => (Component) => Component,
 }));
 vi.mock('../../actions', () => ({
   fetchPayroll: () => ({ type: 'TEST_FETCH_PAYROLL' }),

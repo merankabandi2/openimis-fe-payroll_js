@@ -11,6 +11,7 @@ import {
   useHistory,
   withTooltip,
   GetIconComponent,
+  overridable,
 } from '@openimis/fe-core';
 import {
   MODULE_NAME,
@@ -54,4 +55,4 @@ function PayrollsPage() {
   );
 }
 
-export default PayrollsPage;
+export default overridable('payroll.PayrollsPage')(PayrollsPage);
