@@ -13,6 +13,7 @@ import {
   coreConfirm,
   journalize,
   GetIconComponent,
+  overridable,
 } from '@openimis/fe-core';
 import {
   fetchPayroll,
@@ -243,4 +244,6 @@ const mapStateToProps = (state, props) => ({
 });
 
 export { StyledPayrollPage };
-export default connect(mapStateToProps, mapDispatchToProps)(PayrollPage);
+export default overridable('payroll.PayrollPage')(
+  connect(mapStateToProps, mapDispatchToProps)(PayrollPage),
+);
